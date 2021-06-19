@@ -7,6 +7,6 @@
 				await enviar_mensagens_unicas(canal_world_news, news.text+" <"+news['href']+">")
 */
 
-fetch('https://old.reddit.com/r/worldnews/top/?sort=top&t=day').then(response => response.json()).then(data => {
+fetch('/cors-proxy/https://old.reddit.com/r/worldnews/top/?sort=top&t=day').then(response => response.json()).then(data => {
     console.log(data);
 });
