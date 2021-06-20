@@ -29,7 +29,7 @@ fetch(PROXY+'https://old.reddit.com/r/worldnews/top/?sort=top&t=day')
 	const html = new DOMParser().parseFromString(data, 'text/html');
 	let news = html.querySelectorAll(`a[data-event-action="title"]`);
 	news = Array.from(news)
-	for(noticia of news.slice(0,1)) {
+	for(noticia of news.slice(9,10)) {
 		if(!noticia.href.includes('alb.reddit.com') && !noticia.href.includes('/user/')) {
 			document.querySelector('p').innerHTML = noticia.innerHTML
 			fetch(PROXY+noticia.href)
