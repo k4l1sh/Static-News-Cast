@@ -2,26 +2,32 @@
 
 const PROXY = window.location.hostname == '0.0.0.0'?'':'/cors-proxy/';
 
+class Noticia {
+	constructor(texto, url, imagem, fetchTime) {
+		[this.texto, this.url, this.imagem, this.fetchTime] = [texto, url, imagem, fetchTime]; 
+	}
+}
+let testeNew = new Noticia("lol", "urlaqui", "imagema1ui", 90532434);
+console.log(testeNew)
+
 function setBackgroundImg(URL) {	
 	const propriedades = {
 		'background': `url(${URL}) no-repeat center center fixed`,
 		'-webkit-background-size': 'cover',
 		'-moz-background-size': 'cover',
 		'-o-background-size': 'cover',
-		'background-size': 'cover'
+		'background-size': 'cover',
+		'-webkit-transition': 'background 2s ease-out',
+		'-moz-transition': 'background 2s ease-out',
+		'-o-transition': 'background 2s ease-out',
+		'transition': 'background 2s ease-out'
 	}
-	for (const es in propriedades) {
-		document.body.style[es] = propriedades[es]
+	for (const CSSTEXT in propriedades) {
+		document.querySelector('main').style[CSSTEXT] = propriedades[CSSTEXT]
 	}
-	/*
-	document.body.style.cssText = `
-		background: url(${URL}) no-repeat center center fixed;
-		-webkit-background-size: cover;
-		-moz-background-size: cover;
-		-o-background-size: cover;
-		background-size: cover;
-	`;*/
 }
+
+
 
 fetch(PROXY+'https://old.reddit.com/r/worldnews/top/?sort=top&t=day')
 .then(response => response.text())
