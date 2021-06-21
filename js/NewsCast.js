@@ -49,7 +49,6 @@ async function constructNewsObject(url, headline) {
 }
 
 function changeContent(noticia) {
-	console.log(noticia);
 	setBackgroundImage(noticia.imagem)
 	document.querySelector('p').innerHTML = noticia.headline;
 	document.querySelector('p').innerHTML += `<br/>&nbsp;- <i>${noticia.fonte}</i>`;
