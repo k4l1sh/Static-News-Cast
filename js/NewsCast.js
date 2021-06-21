@@ -67,7 +67,7 @@ async function scraperReddit(url) {
 			newsPromises.push(constructNewsObject(noticia.href, noticia.innerHTML));
 		}
 	}
-	Promise.allSettled(newsPromises).then(allNews => {
+	await Promise.allSettled(newsPromises).then(allNews => {
 		const headlines = allNews.map(promise => promise.value);
 		localStorage.setItem('noticias', JSON.stringify(headlines));
 		newsInterval(headlines);
