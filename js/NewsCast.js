@@ -73,12 +73,13 @@ async function scraperReddit(url) {
 	});
 }
 
-async function newsInterval() {
-	await new Promise(resolve => setTimeout(resolve, 20000));
-	let news = JSON.parse(localStorage.noticias);
-	changeContent(news[Math.floor(Math.random()*(news.length-1))]);
-	newsInterval();
+function newsInterval(news) {
+	//new Promise(resolve => setTimeout(resolve, 20000));
+	setTimeout(() => {
+		changeContent(news[Math.floor(Math.random()*(news.length-1))]);
+		newsInterval(JSON.parse(localStorage.noticias));
+	}, 20000);
 }
 
 scraperReddit('https://old.reddit.com/r/worldnews/top/?sort=top&t=day');
-newsInterval();
+newsInterval(JSON.parse(localStorage.noticias));
