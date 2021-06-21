@@ -59,9 +59,9 @@ async function scraperReddit(url) {
 	const response = await fetch(PROXY+url);
 	const html = new DOMParser().parseFromString(await response.text(), 'text/html');
 	let news = html.querySelectorAll(`a[data-event-action="title"]`);
-	news = Array.from(news)
+	//news = Array.from(news)
 	let newsPromises = [];
-	for(noticia of news.slice(0,15)) {
+	for(noticia of news) {
 		if(!noticia.href.includes('alb.reddit.com') && !noticia.href.includes('/user/')) {
 			if(!localStorage.noticias || !newsPromises.length) changeContent(await constructNewsObject(noticia.href, noticia.innerHTML));
 			newsPromises.push(constructNewsObject(noticia.href, noticia.innerHTML));
