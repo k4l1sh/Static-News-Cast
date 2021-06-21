@@ -6,6 +6,28 @@ main {
     width: 100vw;
     height: 100vh;
 }
+@-webkit-keyframes showcontent {
+    0%   {opacity: 0;}
+    100% {opacity: 1;}
+}
+@-moz-keyframes showcontent {
+    0%   {opacity: 0;}
+    100% {opacity: 1;}
+}
+@-o-keyframes showcontent {
+    0%   {opacity: 0;}
+    100% {opacity: 1;}
+}
+@keyframes showcontent {
+    0%   {opacity: 0;}
+    100% {opacity: 1;}
+}
+.fading {
+    -webkit-animation: showcontent 3s normal forwards ease-in-out;
+    -moz-animation: showcontent 3s normal forwards ease-in-out;
+    -o-animation: showcontent 3s normal forwards ease-in-out;
+    animation: showcontent 3s normal forwards ease-in-out;
+}
 div {
     font-size: calc(2vh + 2vw);;
     color: white;

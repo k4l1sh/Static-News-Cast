@@ -1,8 +1,7 @@
 //https://blog.jim-nielsen.com/2020/a-cors-proxy-with-netlify/
 
 const PROXY = window.location.hostname == '0.0.0.0'?'':'/cors-proxy/';
-let noticias = [];
-if(localStorage.getItem('noticias') != null) noticias.push(...localStorage.getItem('noticias'));
+
 
 class Noticia {
 	constructor(headline, url, imagem, fonte, fetchTime) {
@@ -16,15 +15,15 @@ function setBackgroundImage(URL) {
 		'-webkit-background-size': 'cover',
 		'-moz-background-size': 'cover',
 		'-o-background-size': 'cover',
-		'background-size': 'cover',
-		'-webkit-transition': 'background 2s ease-out',
-		'-moz-transition': 'background 2s ease-out',
-		'-o-transition': 'background 2s ease-out',
-		'transition': 'background 2s ease-out'
+		'background-size': 'cover'
 	}
 	for (const CSSTEXT in propriedades) {
 		document.querySelector('main').style[CSSTEXT] = propriedades[CSSTEXT]
+		document.querySelector('main').classList.add('fading');
 	}
+	setTimeout(() => {
+		document.querySelector('main').classList.remove('fading');
+	}, 5000);
 }
 
 function metaFetch(html, propriedade) {
@@ -43,68 +42,44 @@ async function constructNewsObject(url, headline) {
 	const response = await fetch(PROXY+url);
 	if(response.ok) {
 		const html = new DOMParser().parseFromString(await response.text(), 'text/html');
-		return new Noticia(headline, url, metaFetch(html, "og:image"), metaFetch(html, "og:site_name"), new Date().getTime());
-	}
-}
-
-async function changeContent(url, headline) {
-	const response = await fetch(PROXY+url);
-	if(response.ok) {
-		const html = new DOMParser().parseFromString(await response.text(), 'text/html');
-
 		const ogimage = metaFetch(html, "og:image");
-		isImage(ogimage)
-		.then(isImg => {
-			if(isImg) setBackgroundImage(ogimage)
-		});
-		document.querySelector('p').innerHTML = headline;
-		document.querySelector('p').innerHTML += `<br/>&nbsp;- <i>${metaFetch(html, "og:site_name")}</i>`;
-		return true;
+		const imgurl= await isImage(ogimage) ? ogimage : '';
+		return new Noticia(headline, url, imgurl, metaFetch(html, "og:site_name"), new Date().getTime());
 	}
 }
 
+function changeContent(noticia) {
+	console.log(noticia);
+	setBackgroundImage(noticia.imagem)
+	document.querySelector('p').innerHTML = noticia.headline;
+	document.querySelector('p').innerHTML += `<br/>&nbsp;- <i>${noticia.fonte}</i>`;
+}
 
-function scrapeReddit(url) {
-	fetch(PROXY+url)
-	.then(response => response.text())
-	.then(data => {
-		const html = new DOMParser().parseFromString(data, 'text/html');
-		let news = html.querySelectorAll(`a[data-event-action="title"]`);
-		news = Array.from(news)
-		for(noticia of news.slice(5,6)) {
-			if(!noticia.href.includes('alb.reddit.com') && !noticia.href.includes('/user/')) {
 
-				changeContent(noticia.href, noticia.innerHTML);
-				//constructNewsObject(noticia.href, noticia.innerHTML).then(console.log);
-		//		constructNewsObject(noticia.href, noticia.innerHTML)
-		//		.then(newsObj => {localStorage.setItem('noticias', JSON.stringynoticias);});
-			}
+async function scraperReddit(url) {
+	const response = await fetch(PROXY+url);
+	const html = new DOMParser().parseFromString(await response.text(), 'text/html');
+	let news = html.querySelectorAll(`a[data-event-action="title"]`);
+	news = Array.from(news)
+	let newsPromises = [];
+	for(noticia of news.slice(1,8)) {
+		if(!noticia.href.includes('alb.reddit.com') && !noticia.href.includes('/user/')) {
+			if(!localStorage.noticias || !newsPromises.length) changeContent(await constructNewsObject(noticia.href, noticia.innerHTML));
+			newsPromises.push(constructNewsObject(noticia.href, noticia.innerHTML));
 		}
-	//}).then(_ => {
-		//console.log(noticias)
-		//localStorage.setItem('noticias', noticias)
+	}
+	Promise.allSettled(newsPromises).then(allNews => {
+		const headlines = allNews.map(promise => promise.value);
+		localStorage.noticias = JSON.stringify(headlines);
 	});
 }
-/*
-				const nova = new DOMParser().parseFromString(dados, 'text/html');
 
-				const ogimage = metaFetch(nova, "og:image");
-				isImage(ogimage)
-				.then(isImg => {
-					if(isImg) setBackgroundImage(ogimage)
-				});
-
-				document.querySelector('p').innerHTML += `<br/>&nbsp;- <i>${metaFetch(nova, "og:site_name")}</i>`;
-				*/
-
-/*
-async function asyncFn() {
-  const arr = ['a', 'b', 'c'];
-  for (const el of arr) {
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    console.log(el);
-  }
+async function newsInterval() {
+	await new Promise(resolve => setTimeout(resolve, 60000));
+	let news = JSON.parse(localStorage.noticias);
+	changeContent(news[Math.floor(Math.random()*(news.length-1))]);
+	newsInterval();
 }
-*/
 
-scrapeReddit('https://old.reddit.com/r/worldnews/top/?sort=top&t=day');
+scraperReddit('https://old.reddit.com/r/worldnews/top/?sort=top&t=day');
+newsInterval();
