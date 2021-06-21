@@ -78,7 +78,7 @@ function newsInterval(news) {
 	//new Promise(resolve => setTimeout(resolve, 20000));
 	setTimeout(() => {
 		changeContent(news[Math.floor(Math.random()*(news.length-1))]);
-		newsInterval(JSON.parse(localStorage.getItem('noticias'));
+		newsInterval(JSON.parse(localStorage.getItem('noticias')));
 	}, 20000);
 }
 
