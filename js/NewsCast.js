@@ -69,7 +69,8 @@ async function scraperReddit(url) {
 	}
 	Promise.allSettled(newsPromises).then(allNews => {
 		const headlines = allNews.map(promise => promise.value);
-		localStorage.noticias = JSON.stringify(headlines);
+		localStorage.setItem('noticias', JSON.stringify(headlines));
+		newsInterval(headlines);
 	});
 }
 
@@ -77,9 +78,10 @@ function newsInterval(news) {
 	//new Promise(resolve => setTimeout(resolve, 20000));
 	setTimeout(() => {
 		changeContent(news[Math.floor(Math.random()*(news.length-1))]);
-		newsInterval(JSON.parse(localStorage.noticias));
+		newsInterval(JSON.parse(localStorage.getItem('noticias'));
 	}, 20000);
 }
 
+//https://staticnewscast.netlify.app/image/NewsThumbImg/Small/997d5c6f-32e9-425d-b7f6-9146f6a4d540.jpeg
+
 scraperReddit('https://old.reddit.com/r/worldnews/top/?sort=top&t=day');
-newsInterval(JSON.parse(localStorage.noticias));
